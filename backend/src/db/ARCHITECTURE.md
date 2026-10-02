@@ -1,4 +1,4 @@
-# Database Architecture (Phase 2)
+# Database Architecture (Store Rating Platform)
 
 This document outlines the relational database schema, constraints, indexes, and architectural decisions for the Store Rating Platform, built for PostgreSQL.
 
@@ -112,7 +112,7 @@ Stores ratings submitted by Normal Users for Stores.
 
 ## 4. Indexes
 
-Indexes are designed to optimize the specific filtering, searching, and dashboard requirements outlined in the PDF:
+Indexes are designed to optimize the specific filtering, searching, and dashboard requirements:
 
 - **`idx_users_role`** on `users(role)`: Optimizes the Admin dashboard filtering where users are queried by their role.
 - **`idx_users_name`** on `users(name)`: Supports Admin dashboard sorting/filtering by user name.
@@ -137,9 +137,9 @@ All roles (System Administrator, Normal User, Store Owner) share the `users` tab
 - **Reasoning:** A single login system is required. Centralizing authentication and basic profile data prevents duplicating password hashing logic, schema, and API boundaries. The `role` column will strictly dictate authorization in the Express routing layers.
 
 ### 5.3 Password Validation Boundary
-While the PDF dictates strict password rules (8-16 chars, uppercase, special character), we **do not** enforce these via database `CHECK` constraints.
-- **Reasoning:** The application will hash passwords using `bcrypt` before insertion. Bcrypt hashes are fixed-length strings (typically 60 characters) and obfuscate the original contents. Therefore, password complexity validation strictly belongs to the Backend Application Layer (Phase 9/Validations).
+While the system dictates strict password rules (8-16 chars, uppercase, special character), we **do not** enforce these via database `CHECK` constraints.
+- **Reasoning:** The application hashes passwords using `bcrypt` before insertion. Bcrypt hashes are fixed-length strings (typically 60 characters) and obfuscate the original contents. Therefore, password complexity validation strictly belongs to the Backend Application API Layer (implemented via `express-validator` middleware).
 
 ### 5.4 One-Store-Per-Owner Enforcement
-The PDF does not dictate that a Store Owner owns multiple stores. Therefore, we rigidly enforce a 1:1 relationship between a Store Owner and a Store directly at the database level by applying a `UNIQUE(owner_id)` constraint on the `stores` table.
+We rigidly enforce a 1:1 relationship between a Store Owner and a Store directly at the database level by applying a `UNIQUE(owner_id)` constraint on the `stores` table.
 - **Reasoning:** Enforcing this strictly in the schema prevents orphan or floating stores, deeply simplifies dashboard routing, and ensures zero ambiguity in retrieving a Store Owner's dashboard metrics.
