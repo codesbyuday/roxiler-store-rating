@@ -9,7 +9,7 @@ This document outlines the relational database schema, constraints, indexes, and
 ```mermaid
 erDiagram
     USERS ||--o{ RATINGS : submits
-    USERS ||--o{ STORES : owns
+    USERS ||--|| STORES : "owns (1:1)"
     STORES ||--o{ RATINGS : receives
 
     USERS {
@@ -70,7 +70,7 @@ Stores information about registered stores and their associated Store Owner.
 | `name` | VARCHAR(255) | NOT NULL | The store's name. |
 | `email` | VARCHAR(255) | NOT NULL | The store's contact email. |
 | `address` | VARCHAR(400) | NOT NULL | The physical or primary address. |
-| `owner_id` | INTEGER | NOT NULL | Foreign key to `users.id`. Represents the Store Owner. |
+| `owner_id` | INTEGER | UNIQUE, NOT NULL | Foreign key to `users.id`. Represents the strictly 1:1 Store Owner. |
 | `created_at` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Record creation timestamp. |
 | `updated_at` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Record update timestamp. |
 
@@ -105,6 +105,7 @@ Stores ratings submitted by Normal Users for Stores.
 
 ### 3.3 Unique Constraints
 - **User Email:** `UNIQUE(email)` enforces unique accounts system-wide.
+- **Store Owner (1:1):** `UNIQUE(owner_id)` on the `stores` table guarantees that a single Store Owner can be associated with *at most one* store, strictly enforcing a 1:1 structural relationship at the database level.
 - **One Rating Per User Per Store:** `UNIQUE (user_id, store_id)` on the `ratings` table. Ensures a Normal User cannot submit multiple distinct ratings for the same store. Subsequent rating changes will be handled via `UPDATE` queries or `INSERT ... ON CONFLICT`.
 
 ---
@@ -138,5 +139,6 @@ All roles (System Administrator, Normal User, Store Owner) share the `users` tab
 While the PDF dictates strict password rules (8-16 chars, uppercase, special character), we **do not** enforce these via database `CHECK` constraints.
 - **Reasoning:** The application will hash passwords using `bcrypt` before insertion. Bcrypt hashes are fixed-length strings (typically 60 characters) and obfuscate the original contents. Therefore, password complexity validation strictly belongs to the Backend Application Layer (Phase 9/Validations).
 
-### 5.4 No "Multiple Stores per Owner" Complexities
-The PDF does not dictate that a Store Owner owns multiple stores. While the relational model (`owner_id` on `stores`) inherently allows for it, we will strictly enforce business logic (e.g., 1-to-1 dashboard routing) at the application level to keep it simple, strictly matching the assignment constraints.
+### 5.4 Strict 1:1 "One Store per Owner" Complexity
+The assignment specifies that an owner can view "the" average rating of "their" store. To enforce this strict 1:1 ownership relationship directly in the database architecture, a `UNIQUE` constraint has been applied to the `owner_id` column in the `stores` table.
+- **Reasoning:** Adding this constraint completely guarantees that an owner cannot have multiple stores registered to their ID, eliminating any potential data inconsistencies and aligning perfectly with the intended simplicity of the dashboard routing.
