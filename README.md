@@ -144,6 +144,50 @@ To verify that the backend API is active:
 
 ---
 
+## Authentication & Authorization API (Phase 4)
+
+The backend handles authentication via JSON Web Tokens (JWT) and uses bcrypt for password hashing. All authenticated endpoints expect a `Bearer` token.
+
+### Header Format
+```http
+Authorization: Bearer <your_jwt_token_here>
+```
+
+### Role System
+The platform supports three strict user roles:
+- `admin` (System Administrator)
+- `user` (Normal User)
+- `owner` (Store Owner)
+
+### Public Endpoints
+
+- **`POST /api/auth/signup`**
+  - **Body:** `{ "name", "email", "password", "address" }`
+  - **Details:** Normal users can sign up. The system automatically enforces the `user` role (prevents escalation to `admin` or `owner`).
+
+- **`POST /api/auth/login`**
+  - **Body:** `{ "email", "password" }`
+  - **Details:** Authenticates an existing user and returns a signed JWT. No password hashes are exposed.
+
+### Protected Endpoints (Requires JWT)
+
+- **`GET /api/auth/me`**
+  - **Details:** Retrieves safe profile information about the currently logged-in user.
+
+- **`PATCH /api/auth/password`**
+  - **Body:** `{ "currentPassword", "newPassword" }`
+  - **Details:** Changes the user's password securely (requires verification of the old password).
+
+### Testing Authentication
+1. **Login** using one of the seeded accounts (e.g., `admin@demo.com` with password `Demo@12345`).
+2. **Copy the `token`** from the response JSON.
+3. **Make an authenticated request** using cURL or Postman:
+   ```bash
+   curl -H "Authorization: Bearer <token>" http://localhost:5000/api/auth/me
+   ```
+
+---
+
 ## Upcoming Phases
 
 - **Phase 2:** PostgreSQL database schema & relational design (Users, Stores, Ratings)
