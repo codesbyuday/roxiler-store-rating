@@ -9,7 +9,7 @@ This document outlines the relational database schema, constraints, indexes, and
 ```mermaid
 erDiagram
     USERS ||--o{ RATINGS : submits
-    USERS ||--|| STORES : "owns (1:1)"
+    USERS ||--o| STORES : owns
     STORES ||--o{ RATINGS : receives
 
     USERS {
@@ -70,7 +70,7 @@ Stores information about registered stores and their associated Store Owner.
 | `name` | VARCHAR(255) | NOT NULL | The store's name. |
 | `email` | VARCHAR(255) | NOT NULL | The store's contact email. |
 | `address` | VARCHAR(400) | NOT NULL | The physical or primary address. |
-| `owner_id` | INTEGER | UNIQUE, NOT NULL | Foreign key to `users.id`. Represents the strictly 1:1 Store Owner. |
+| `owner_id` | INTEGER | UNIQUE, NOT NULL | Foreign key to `users.id`. Represents the Store Owner (1:1 relationship). |
 | `created_at` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Record creation timestamp. |
 | `updated_at` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Record update timestamp. |
 
@@ -105,7 +105,7 @@ Stores ratings submitted by Normal Users for Stores.
 
 ### 3.3 Unique Constraints
 - **User Email:** `UNIQUE(email)` enforces unique accounts system-wide.
-- **Store Owner (1:1):** `UNIQUE(owner_id)` on the `stores` table guarantees that a single Store Owner can be associated with *at most one* store, strictly enforcing a 1:1 structural relationship at the database level.
+- **One Store Per Owner:** `UNIQUE(owner_id)` on the `stores` table enforces the strict one-owner-to-one-store assignment rule at the database level.
 - **One Rating Per User Per Store:** `UNIQUE (user_id, store_id)` on the `ratings` table. Ensures a Normal User cannot submit multiple distinct ratings for the same store. Subsequent rating changes will be handled via `UPDATE` queries or `INSERT ... ON CONFLICT`.
 
 ---
@@ -114,14 +114,15 @@ Stores ratings submitted by Normal Users for Stores.
 
 Indexes are designed to optimize the specific filtering, searching, and dashboard requirements outlined in the PDF:
 
-- **`idx_users_email`** on `users(email)`: Speeds up authentication lookups and uniqueness checks.
 - **`idx_users_role`** on `users(role)`: Optimizes the Admin dashboard filtering where users are queried by their role.
 - **`idx_users_name`** on `users(name)`: Supports Admin dashboard sorting/filtering by user name.
 - **`idx_stores_name`** on `stores(name)`: Supports the Normal User requirement to search stores by name.
 - **`idx_stores_address`** on `stores(address)`: Supports the Normal User requirement to search stores by address.
-- **`idx_stores_owner_id`** on `stores(owner_id)`: Crucial for the Store Owner dashboard, where owners need fast access to their specific store.
 - **`idx_ratings_store_id`** on `ratings(store_id)`: Highly critical. Optimizes the calculation of a store's average rating (`AVG(rating) WHERE store_id = X`).
-- **Note on Composite Uniqueness:** The `UNIQUE(user_id, store_id)` constraint automatically creates an index on `(user_id, store_id)`, facilitating extremely fast lookups for "has this user rated this store already?".
+- **Note on Implicit Indexes from Unique Constraints:** 
+  - `UNIQUE(email)` automatically creates an index on `users.email` (facilitates fast authentication lookups).
+  - `UNIQUE(owner_id)` automatically creates an index on `stores.owner_id` (facilitates fast Store Owner dashboard loads).
+  - `UNIQUE(user_id, store_id)` automatically creates an index on `ratings(user_id, store_id)` (facilitates extremely fast lookups for "has this user rated this store already?").
 
 ---
 
@@ -139,6 +140,6 @@ All roles (System Administrator, Normal User, Store Owner) share the `users` tab
 While the PDF dictates strict password rules (8-16 chars, uppercase, special character), we **do not** enforce these via database `CHECK` constraints.
 - **Reasoning:** The application will hash passwords using `bcrypt` before insertion. Bcrypt hashes are fixed-length strings (typically 60 characters) and obfuscate the original contents. Therefore, password complexity validation strictly belongs to the Backend Application Layer (Phase 9/Validations).
 
-### 5.4 Strict 1:1 "One Store per Owner" Complexity
-The assignment specifies that an owner can view "the" average rating of "their" store. To enforce this strict 1:1 ownership relationship directly in the database architecture, a `UNIQUE` constraint has been applied to the `owner_id` column in the `stores` table.
-- **Reasoning:** Adding this constraint completely guarantees that an owner cannot have multiple stores registered to their ID, eliminating any potential data inconsistencies and aligning perfectly with the intended simplicity of the dashboard routing.
+### 5.4 One-Store-Per-Owner Enforcement
+The PDF does not dictate that a Store Owner owns multiple stores. Therefore, we rigidly enforce a 1:1 relationship between a Store Owner and a Store directly at the database level by applying a `UNIQUE(owner_id)` constraint on the `stores` table.
+- **Reasoning:** Enforcing this strictly in the schema prevents orphan or floating stores, deeply simplifies dashboard routing, and ensures zero ambiguity in retrieving a Store Owner's dashboard metrics.

@@ -70,13 +70,16 @@ store-rating-platform/
 
 ## Installation & Setup
 
-1. **Clone the repository and install all dependencies:**
+1. **Create PostgreSQL Database:**
+   Create an empty database named `store_rating_db` in PostgreSQL.
+
+2. **Clone the repository and install all dependencies:**
    ```bash
    # From project root
    npm run install:all
    ```
 
-2. **Configure Environment Variables:**
+3. **Configure Environment Variables:**
    Copy `.env.example` in `backend/` to `backend/.env`:
    ```bash
    # On Windows PowerShell
@@ -84,7 +87,14 @@ store-rating-platform/
    # Or on macOS/Linux
    cp backend/.env.example backend/.env
    ```
-   *Note: Update `DATABASE_URL` with your local PostgreSQL credentials.*
+   *Note: Update `DATABASE_URL` or DB_* credentials in `.env` with your local PostgreSQL credentials.*
+
+4. **Initialize Database (Migrations & Seed Data):**
+   ```bash
+   # From project root
+   npm run setup
+   ```
+   *This command safely creates the database schema, tables, constraints, and idempotent seed records.*
 
 ---
 
