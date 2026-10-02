@@ -188,6 +188,36 @@ The platform supports three strict user roles:
 
 ---
 
+## Admin API (Phase 5)
+
+Administrative endpoints are strictly protected by the `authenticate` and `requireRole('admin')` middlewares.
+
+### Endpoints (Requires Admin JWT)
+
+- **`GET /api/admin/dashboard`**
+  - **Details:** Returns aggregations: `totalUsers`, `totalStores`, `totalRatings` using efficient SQL count queries.
+  
+- **`POST /api/admin/users`**
+  - **Body:** `{ "name", "email", "password", "address", "role" }`
+  - **Details:** Creates a new user of any role (`admin`, `user`, `owner`). Follows strict password/length validations.
+
+- **`POST /api/admin/stores`**
+  - **Body:** `{ "name", "email", "address", "ownerId" }`
+  - **Details:** Registers a new store and assigns it to an existing `owner`. Ensures 1:1 assignment natively.
+
+- **`GET /api/admin/users`**
+  - **Query Params:** `?name=&email=&address=&role=&sortBy=id&order=asc`
+  - **Details:** Returns a filtered, safely sorted list of users (excluding password hashes).
+
+- **`GET /api/admin/users/:id`**
+  - **Details:** Returns details for a specific user. If the user is a Store Owner, it calculates and attaches their store's overall rating.
+
+- **`GET /api/admin/stores`**
+  - **Query Params:** `?name=&email=&address=&sortBy=overallRating&order=desc`
+  - **Details:** Returns a filtered, safely sorted list of stores. Automatically calculates the `overallRating` using `AVG()` natively in PostgreSQL.
+
+---
+
 ## Upcoming Phases
 
 - **Phase 2:** PostgreSQL database schema & relational design (Users, Stores, Ratings)
