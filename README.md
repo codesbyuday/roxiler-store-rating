@@ -218,6 +218,26 @@ Administrative endpoints are strictly protected by the `authenticate` and `requi
 
 ---
 
+## Normal User API (Phase 6)
+
+Endpoints available strictly to users with the `user` role.
+
+### Endpoints (Requires User JWT)
+
+- **`GET /api/user/stores`**
+  - **Query Params:** `?name=&address=&sortBy=overallRating&order=desc`
+  - **Details:** Returns a list of stores featuring their `overallRating` and the currently authenticated user's specific `userRating`.
+
+- **`POST /api/user/stores/:storeId/rating`**
+  - **Body:** `{ "rating": 5 }`
+  - **Details:** Submits a rating (1-5) for a specific store. Safely rejects attempts to submit duplicate ratings (returning `409 Conflict`).
+
+- **`PATCH /api/user/stores/:storeId/rating`**
+  - **Body:** `{ "rating": 4 }`
+  - **Details:** Modifies a previously submitted rating belonging to the currently authenticated user.
+
+---
+
 ## Upcoming Phases
 
 - **Phase 2:** PostgreSQL database schema & relational design (Users, Stores, Ratings)
