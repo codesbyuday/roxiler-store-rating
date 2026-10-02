@@ -99,42 +99,43 @@ Ensure you have the following installed locally:
    cd store-rating-platform
    ```
 
-2. **Install Backend Dependencies:**
+2. **Install all dependencies:**
+   Instead of installing frontend and backend separately, run this convenient command from the **root directory** to install dependencies for the root, frontend, and backend simultaneously:
    ```bash
-   cd backend
-   npm install
-   ```
-
-3. **Install Frontend Dependencies:**
-   ```bash
-   cd ../frontend
-   npm install
+   npm run install:all
    ```
 
 ---
 
-## Environment Variables
+## Environment Variables & Database Creation
 
-Locate the `.env.example` file housed in the `backend/` directory.
+Before running the application, you must create a PostgreSQL database on your local machine and link it via environment variables.
 
-1. Copy `.env.example` to `.env` in the `backend/` directory:
+1. **Create the Database in PostgreSQL:**
+   Open `psql`, pgAdmin, or your preferred database GUI, and create a brand new database. You can name it whatever you want (for example, `store_rating_db` or `my_local_db`).
+   ```sql
+   CREATE DATABASE store_rating_db;
+   ```
+
+2. **Set up the `.env` file:**
+   Copy the `.env.example` file housed in the root directory to `.env`:
    ```bash
    cp .env.example .env
    ```
-2. Open `.env` and configure the database credentials to match your local PostgreSQL server:
+   Open the newly created `.env` file and configure the database credentials to match your local PostgreSQL server. **Make sure to add the exact database name you just created into the `DB_NAME` field.**
    ```env
    # Database Configuration (PostgreSQL)
    DB_HOST=localhost
    DB_PORT=5432
    DB_USER=postgres
    DB_PASSWORD=your_secure_password
-   DB_NAME=store_rating_db
+   DB_NAME=store_rating_db  # <--- Put the database name you created here
    
    # Security
    JWT_SECRET=generate_a_secure_random_string
    ```
 
-*(Ensure the target `DB_NAME` database is created locally using `psql` or pgAdmin before running the setup script).*
+*(Note: If your PostgreSQL instance runs on a different port than `5432`, ensure you update `DB_PORT` as well).*
 
 ---
 
@@ -142,7 +143,7 @@ Locate the `.env.example` file housed in the `backend/` directory.
 
 The platform contains a built-in automated migration and seeder engine.
 
-In the `backend/` folder, run:
+Once your `.env` is configured and the empty database exists, run the following command from the **root directory**:
 ```bash
 npm run setup
 ```
@@ -162,26 +163,21 @@ Running setup automatically yields three initial accounts formatted with the pas
 
 ## Application Scripts
 
-### Starting the Backend
-```bash
-cd backend
-npm run dev
-```
-Starts the Express server on `http://localhost:5000`.
+### Starting the Full Stack App
+Instead of opening multiple terminals, you can run both the frontend and backend simultaneously using the root package setup.
 
-### Starting the Frontend
+From the **root folder**, run the main command:
 ```bash
-cd frontend
-npm run dev
-```
-Starts the Vite development server on `http://localhost:5173`. Proxies `/api` routes seamlessly to the Express backend.
-
-### Building the Frontend
-```bash
-cd frontend
 npm run build
 ```
-Compiles the React application strictly for production output into the `/dist` directory.
+*(This triggers `concurrently` to start the Node/Express API on `http://localhost:5000` and the Vite React app on `http://localhost:5173`.)*
+
+### Compiling the Frontend (Production)
+If you wish to test the production build compilation of the frontend, run:
+```bash
+npm run build --prefix frontend
+```
+*(Compiles the React application strictly for production output into the `frontend/dist` directory).*
 
 ---
 
