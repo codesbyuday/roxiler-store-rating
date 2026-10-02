@@ -8,7 +8,7 @@ export default function AdminStores() {
   const [error, setError] = useState('');
   
   // Filters and sorting
-  const [filters, setFilters] = useState({ name: '', address: '' });
+  const [filters, setFilters] = useState({ name: '', email: '', address: '' });
   const [sortBy, setSortBy] = useState('id');
   const [order, setOrder] = useState('asc');
 
@@ -126,10 +126,20 @@ export default function AdminStores() {
       )}
 
       <div className="card">
-        <form onSubmit={applyFilters} style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-          <input type="text" className="form-control" style={{flex: 1, minWidth: '200px'}} placeholder="Filter by Name" name="name" value={filters.name} onChange={handleFilterChange} />
-          <input type="text" className="form-control" style={{flex: 1, minWidth: '200px'}} placeholder="Filter by Address" name="address" value={filters.address} onChange={handleFilterChange} />
-          <button type="submit" className="btn btn-secondary">Search</button>
+        <form onSubmit={applyFilters} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1.5rem', alignItems: 'end' }}>
+          <div>
+            <label className="form-label" style={{ fontSize: '0.85rem', marginBottom: '0.25rem' }}>Name</label>
+            <input type="text" className="form-control" placeholder="Filter by Name" name="name" value={filters.name} onChange={handleFilterChange} />
+          </div>
+          <div>
+            <label className="form-label" style={{ fontSize: '0.85rem', marginBottom: '0.25rem' }}>Email</label>
+            <input type="text" className="form-control" placeholder="Filter by Email" name="email" value={filters.email} onChange={handleFilterChange} />
+          </div>
+          <div>
+            <label className="form-label" style={{ fontSize: '0.85rem', marginBottom: '0.25rem' }}>Address</label>
+            <input type="text" className="form-control" placeholder="Filter by Address" name="address" value={filters.address} onChange={handleFilterChange} />
+          </div>
+          <button type="submit" className="btn btn-secondary" style={{ height: '40px' }}>Search</button>
         </form>
 
         {error && <div className="alert alert-error">{error}</div>}

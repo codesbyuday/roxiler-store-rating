@@ -41,7 +41,7 @@ export default function AdminDashboard() {
           </div>
           <div className="stat-card">
             <div className="stat-value">{stats.totalRatings}</div>
-            <div className="stat-label">Total Ratings</div>
+            <div className="stat-label">Total Submitted Ratings</div>
           </div>
         </div>
       )}
