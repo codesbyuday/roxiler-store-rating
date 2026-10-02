@@ -247,3 +247,27 @@ body {
   border-top: 1px solid var(--border-color);
   background-color: var(--card-bg);
 }
+
+/* Forms */
+.form-group { margin-bottom: 1rem; }
+.form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-main); }
+.form-control { width: 100%; padding: 0.5rem 0.75rem; font-size: 1rem; border: 1px solid var(--border-color); border-radius: 4px; font-family: inherit; }
+.form-control:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2); }
+.form-error { color: var(--error-text); font-size: 0.85rem; margin-top: 0.25rem; display: block; }
+.form-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+.form-row .form-group { flex: 1; margin-bottom: 0; }
+
+/* Tables */
+.table-container { width: 100%; overflow-x: auto; margin-top: 1rem; border: 1px solid var(--border-color); border-radius: 6px; }
+table { width: 100%; border-collapse: collapse; text-align: left; background-color: var(--card-bg); }
+th, td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color); }
+th { background-color: #f8fafc; font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+tr:last-child td { border-bottom: none; }
+tr:hover { background-color: #f8fafc; }
+
+/* Grids */
+.dashboard-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.stat-card { background-color: var(--card-bg); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color); text-align: center; }
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--primary-color); }
+.stat-label { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+

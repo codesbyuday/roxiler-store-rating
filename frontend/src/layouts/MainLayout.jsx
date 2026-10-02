@@ -1,39 +1,63 @@
-import React from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function MainLayout() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <div className="app-container">
-      <header className="navbar">
+      <nav className="navbar">
         <div className="nav-brand">
-          <NavLink to="/" className="brand-logo">
-            Store Rating Platform
-          </NavLink>
-          <span className="badge">Phase 1</span>
+          <Link to="/" className="brand-logo">StoreRating</Link>
+          {user && <span className="badge">{user.role.toUpperCase()}</span>}
         </div>
-        <nav className="nav-links">
-          <NavLink
-            to="/"
-            end
-            className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}
-          >
-            Home
-          </NavLink>
-          <NavLink
-            to="/login"
-            className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}
-          >
-            Login
-          </NavLink>
-        </nav>
-      </header>
+        
+        <div className="nav-links">
+          {user ? (
+            <>
+              {user.role === 'admin' && (
+                <>
+                  <Link to="/admin/dashboard" className="nav-item">Dashboard</Link>
+                  <Link to="/admin/users" className="nav-item">Users</Link>
+                  <Link to="/admin/stores" className="nav-item">Stores</Link>
+                </>
+              )}
+              {user.role === 'user' && (
+                <>
+                  <Link to="/user/stores" className="nav-item">Stores</Link>
+                </>
+              )}
+              {user.role === 'owner' && (
+                <>
+                  <Link to="/owner/dashboard" className="nav-item">Dashboard</Link>
+                </>
+              )}
+              <div className="nav-links" style={{marginLeft: '2rem'}}>
+                <Link to="/change-password" className="nav-item">Change Password</Link>
+                <button onClick={handleLogout} className="btn btn-secondary">Logout</button>
+              </div>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="nav-item">Login</Link>
+              <Link to="/signup" className="nav-item">Signup</Link>
+            </>
+          )}
+        </div>
+      </nav>
 
       <main className="main-content">
         <Outlet />
       </main>
 
       <footer className="footer">
-        <p>Store Rating Platform &bull; Phase 1 Foundation</p>
+        <p>&copy; {new Date().getFullYear()} Store Rating Platform. All rights reserved.</p>
       </footer>
     </div>
   );
