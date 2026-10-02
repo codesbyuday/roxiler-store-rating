@@ -3,6 +3,7 @@ const healthRoutes = require('./healthRoutes');
 const authRoutes = require('./authRoutes');
 const adminRoutes = require('./adminRoutes');
 const userRoutes = require('./userRoutes');
+const ownerRoutes = require('./ownerRoutes');
 
 const router = express.Router();
 
@@ -11,5 +12,6 @@ router.use('/health', healthRoutes);
 router.use('/auth', authRoutes);
 router.use('/admin', adminRoutes);
 router.use('/user', userRoutes);
+router.use('/owner', ownerRoutes);
 
 module.exports = router;

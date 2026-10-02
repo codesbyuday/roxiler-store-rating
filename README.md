@@ -238,6 +238,21 @@ Endpoints available strictly to users with the `user` role.
 
 ---
 
+## Store Owner API (Phase 7)
+
+Endpoints available strictly to users with the `owner` role. Identity isolation is strictly enforced via the authenticated JWT (`req.user.id`).
+
+### Endpoints (Requires Owner JWT)
+
+- **`GET /api/owner/dashboard`**
+  - **Details:** Returns an aggregate structure containing:
+    1. Information about the store natively bound to the authenticated owner.
+    2. The dynamically calculated `averageRating` for their store.
+    3. A chronologically sorted list of users who submitted a rating (omitting all private info like passwords/hashes).
+  - **Note:** Safely returns a `404` if the owner hasn't yet been assigned a store by the System Administrator.
+
+---
+
 ## Upcoming Phases
 
 - **Phase 2:** PostgreSQL database schema & relational design (Users, Stores, Ratings)
